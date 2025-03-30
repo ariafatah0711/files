@@ -1,7 +1,8 @@
 <template>
   <div>
-    <Navbar />
-    <router-view></router-view>
+    <!-- <Navbar /> -->
+    <Navbar :links="[{ name: 'Notes', path: '/notes/' }, { name: 'Files', path: '/files/' }, { name: 'work', path: '#' }]" />
+    <router-view class="pt-18 sm:pt-25"></router-view>
   </div>
 </template>
 

@@ -116,7 +116,7 @@ onMounted(() => {
     </div>
 
     <ul v-else>
-      <IconButton @click="goBack" :icon="ArrowLeftOutlined" label="Back" color="gray" />
+      <IconButton @click="goBack" :icon="ArrowLeftOutlined" label="Back" color="gray" class="w-full" alwaysShowLabel />
       <li v-for="item in repoContents" :key="item.path" class="flex justify-between items-center my-2 p-3 bg-gray-100 rounded shadow-md hover:bg-blue-100 cursor-pointer">
         <Checkbox v-model="isChecked" :value="item.path" @change="toggleSelection(item.path)" class="mr-4"/>
         <template v-if="item.type === 'dir'">

@@ -1,5 +1,5 @@
 <template>
-    <nav class="breadcrumb">
+    <nav class="breadcrumb w-full truncate">
       <router-link :to="`/`" class="text-blue-500 hover:underline">
         /
       </router-link>

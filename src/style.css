@@ -23,6 +23,7 @@ html,
 body {
   padding-right: 0 !important;
   scrollbar-gutter: stable !important;
+  /* padding-top: 40px; */
 }
 
 /* :root {
