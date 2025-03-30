@@ -73,12 +73,11 @@
 </script> -->
 
 <template>
-  <nav class="fixed top-0 left-0 w-full bg-gray-100 shadow-md p-4 flex justify-between items-center z-50">
+  <!-- <nav class="fixed top-0 left-0 w-full bg-gray-100 shadow-md p-4 flex justify-between items-center z-50">
     <a href="/" class="text-blue-500 hover:underline">
       <h3 class="text-lg font-semibold">{{ appName }} v{{ appVersion }}</h3>
     </a>
 
-    <!-- Links di desktop -->
     <div class="hidden md:flex gap-6">
       <a v-for="link in links" :key="link.path" :href="link.path" class="text-gray-700 hover:text-blue-500">
         {{ link.name }}
@@ -92,6 +91,37 @@
       </span>
       <IconButton v-if="loggedIn" @click="handleLogout" :icon="LogoutOutlined" label="Logout" color="red" />
       <IconButton v-else @click="handleLogin" :icon="LoginOutlined" label="Login" color="blue" />
+    </div> -->
+  <nav class="fixed top-0 left-0 w-full bg-gray-100 shadow-md p-4 flex items-center justify-between z-50">
+    <div>
+      <a href="/" class="text-blue-500 hover:underline">
+        <h3 class="text-lg font-semibold">{{ appName }} v{{ appVersion }}</h3>
+      </a>
+    </div>
+
+    <div class="absolute left-1/2 transform -translate-x-1/2 gap-6 hidden md:flex">
+      <a v-for="link in links" :key="link.path" :href="link.path" class="text-gray-700 hover:text-blue-500">
+        {{ link.name }}
+      </a>
+    </div>
+
+    <div class="items-center gap-4 hidden md:flex">
+      <!-- Status Login (Tetap Ada agar Navbar Stabil) -->
+      <div class="flex justify-center">
+        <span v-if="loggedIn" class="text-green-500 flex items-center">
+          <UserOutlined class="h-5 w-5 mr-2" />
+          <span class="hidden sm:block">Logged In</span>
+        </span>
+        <span v-else class="opacity-0">Placeholder</span>
+      </div>
+
+      <button 
+        @click="loggedIn ? handleLogout() : handleLogin()" 
+        class="flex items-center justify-center gap-2 py-2 px-4 text-white rounded-md transition duration-200"
+        :style="{ backgroundColor: loggedIn ? 'red' : 'blue' }">
+        <component :is="loggedIn ? LogoutOutlined : LoginOutlined" class="h-5 w-5" />
+        <span>{{ loggedIn ? 'Logout' : 'Login' }}</span>
+      </button>
     </div>
 
     <button @click="menuOpen = !menuOpen" class="md:hidden text-gray-700 mr-4 cursor-pointer">
