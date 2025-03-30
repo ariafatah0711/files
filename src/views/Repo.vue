@@ -1,7 +1,6 @@
 <script setup>
 import IconButton from "../components/IconButton.vue";
 import Checkbox from "../components/Checkbox.vue"
-import dragdrop from "../components/dragdrop.vue"
 import Breadcrumb from "../components/Breadcrumb.vue";
 import { onMounted } from "vue";
 import { useFolder } from "../composables/useFolder";
@@ -68,7 +67,6 @@ onMounted(() => {
   console.log(repoContents)
   const downloadPath = route.query.download;
   if (downloadPath) {
-    // Jika ada query parameter download
     handleDownloadByQuery(downloadPath);
   }
 });
@@ -100,15 +98,13 @@ onMounted(() => {
     
     <div class="flex flex-wrap gap-4 justify-left pb-4">
       <!-- <IconButton @click="goBack" :icon="ArrowLeftOutlined" label="Back" color="gray" /> -->
-      <IconButton @click="addFile" :icon="FileAddOutlined" label="Add File" color="blue" />
+      <IconButton @click="addFile" :icon="FileAddOutlined" label="Add" color="blue" />
       <IconButton @click="addFilePath" :icon="FolderAddOutlined" label="Add File with Path" color="green" />
-      <IconButton @click="addFolder" :icon="FolderOpenOutlined" label="Upload Folder" color="yellow" />
-      <IconButton @click="uploadAllFiles" :icon="CloudUploadOutlined" label="Upload Semua" color="purple" />
-      <IconButton @click="deleteSelected" :icon="DeleteOutlined" label="Hapus Terpilih" color="red" />
+      <IconButton @click="addFolder" :icon="FolderOpenOutlined" label="Add Folder" color="yellow" />
+      <IconButton @click="uploadAllFiles" :icon="CloudUploadOutlined" label="Upload" color="purple" />
+      <IconButton @click="deleteSelected" :icon="DeleteOutlined" label="Delete" color="red" />
     </div>
 
-    <!-- <div v-if="error" class="text-gray-500">{{ error }}</div> -->
-    <!-- <div v-else-if="loading" class="text-gray-500">Loading...</div> -->
     <div v-if="error" class="text-red-500 font-semibold">
       ❌ Terjadi Kesalahan: {{ error.message || "Tidak diketahui" }}
     </div>
@@ -157,5 +153,4 @@ onMounted(() => {
       </li>
     </ul>
   </div>
-  <!-- </dragdrop> -->
 </template>

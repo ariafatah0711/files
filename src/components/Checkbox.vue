@@ -19,10 +19,8 @@
 </template>
 
 <script setup>
-  // Remove imports for defineProps and defineEmits as they are not needed in <script setup>
   import { ref, watch } from 'vue';
 
-  // Using defineProps and defineEmits directly in the <script setup> context
   const props = defineProps({
     modelValue: Boolean,
   });

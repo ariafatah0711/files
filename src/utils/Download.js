@@ -5,6 +5,8 @@ import { saveAs } from "file-saver";
 // import { fetchRepoContents } from "../composables/api";
 // import { fetchRepoContents } from "../composables/api_v1";
 import { fetchRepoContents } from "../composables/api_v2";
+import GlobalSwal from "./GlobalSwal";
+const Swal = GlobalSwal;
 
 const isDownloading = ref(false);
 
@@ -38,20 +40,31 @@ async function fetchAllFiles(repoName, folderPath, zip, basePath = "") {
 
 export async function downloadFolder(repoName, folderPath) {
   console.log("📦 Mulai mengunduh folder:", repoName, folderPath);
-  isDownloading.value = true;
+
+  let loadingAlert;
   const zip = new JSZip();
 
   try {
+    // Tampilkan loading
+    loadingAlert = Swal.fire({
+      title: "Mengunduh folder...",
+      text: "Mohon tunggu, sedang mengambil file dari GitHub.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    // Fetch semua file di dalam folder
     await fetchAllFiles(repoName, folderPath, zip);
 
-    // Jika tidak ada file dalam ZIP, jangan buat file kosong
+    // Cek apakah ada file dalam ZIP
     if (Object.keys(zip.files).length === 0) {
       Swal.fire({
         icon: "warning",
         title: "Tidak ada file yang bisa diunduh",
         text: "Folder ini tidak memiliki file yang dapat diunduh.",
       });
-      isDownloading.value = false;
       return;
     }
 
@@ -73,30 +86,50 @@ export async function downloadFolder(repoName, folderPath) {
       text: "Terjadi kesalahan saat mengunduh folder. Coba lagi!",
     });
   } finally {
-    isDownloading.value = false;
+    // Tutup loading
+    if (loadingAlert) Swal.close();
   }
 }
 
 export async function downloadFile(file) {
+  let loadingAlert;
+
   try {
+    // Tampilkan loading
+    loadingAlert = Swal.fire({
+      title: "Mengunduh...",
+      text: "Mohon tunggu, file sedang diunduh.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(); // Tampilkan spinner
+      },
+    });
+
+    // Mulai proses download
     const response = await fetch(file.download_url);
     if (!response.ok) throw new Error("Gagal mengunduh file");
 
     const blob = await response.blob();
     saveAs(blob, file.name); // Simpan file dengan nama aslinya
 
+    // Tutup loading & tampilkan pesan sukses
     Swal.fire({
       icon: "success",
-      title: "File berhasil diunduh!",
+      title: "Berhasil!",
       text: `File ${file.name} berhasil diunduh.`,
     });
   } catch (error) {
     console.error("Error downloading file:", error);
+
+    // Tampilkan pesan error
     Swal.fire({
       icon: "error",
-      title: "Gagal mengunduh file",
+      title: "Gagal mengunduh",
       text: "Terjadi kesalahan saat mengunduh file. Coba lagi!",
     });
+  } finally {
+    // Pastikan loading ditutup jika masih terbuka
+    if (loadingAlert) Swal.close();
   }
 }
 

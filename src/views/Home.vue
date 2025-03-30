@@ -9,7 +9,6 @@ import { handleDownloadByQuery } from "../utils/Download"
 const { repos, listRepos, createRepo, deleteRepo, loading, error } = useRepo();
 const router = useRouter();
 const route = useRoute();
-// onMounted(listRepos);
 onMounted(() => {
   listRepos()
 
@@ -17,7 +16,6 @@ onMounted(() => {
 
   const downloadPath = route.query.download;
   if (downloadPath) {
-    // Jika ada query parameter download
     handleDownloadByQuery(downloadPath);
   }
 });
@@ -39,9 +37,9 @@ onMounted(() => {
 
     <div v-else-if="loading" class="text-gray-500">Loading...</div>
 
-    <!-- <div v-else-if="repos.length === 0" class="text-gray-500">
+    <div v-else-if="repos.length === 0" class="text-gray-500">
       📂 Belum ada repository. Tambahkan repository baru untuk memulai.
-    </div> -->
+    </div>
     
     <ul v-else>
       <li v-for="repo in repos" :key="repo.id" class="flex justify-between items-center my-2 p-3 bg-gray-100 rounded shadow-md hover:bg-blue-100 cursor-pointer" @click="router.push(`/${repo.name}`)">

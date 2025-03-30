@@ -1,8 +1,11 @@
 <template>
     <nav class="p-4 bg-gray-100 flex justify-between items-center shadow-md">
-      <router-link to="/" class="text-blue-500 hover:underline">
+      <!-- <router-link to="/" class="text-blue-500 hover:underline">
         <h3 class="text-lg font-semibold">{{ appName }} v{{ appVersion }}</h3>
-      </router-link>
+      </router-link> -->
+      <a href="/" className="text-blue-500 hover:underline">
+            <h3 className="text-lg font-semibold">{{ appName }} v{{  appVersion }}</h3>
+      </a>
       
       <div v-if="loggedIn" class="flex items-center gap-4">
         <span class="flex items-center text-sm text-green-500">
