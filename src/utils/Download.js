@@ -8,8 +8,6 @@ import { fetchRepoContents } from "../composables/api_v2";
 import GlobalSwal from "./GlobalSwal";
 const Swal = GlobalSwal;
 
-const isDownloading = ref(false);
-
 async function fetchAllFiles(repoName, folderPath, zip, basePath = "") {
   try {
     console.log(`🔍 Mengecek isi folder: ${folderPath}`);

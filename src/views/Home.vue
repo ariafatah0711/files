@@ -22,7 +22,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="p-4">
+  <div class="p-4 min-h-screen">
     <h2 class="text-xl font-semibold mb-4">
       <router-link to="/" class="text-blue-500 hover:underline">Repository List</router-link>
     </h2>
