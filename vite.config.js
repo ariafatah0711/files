@@ -56,5 +56,5 @@ const pwaConfig = {
 
 export default defineConfig({
   plugins: [vue(), tailwindcss(), VitePWA(pwaConfig)],
-  base: "/files/",
+  base: "/",
 });
