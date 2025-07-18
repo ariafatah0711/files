@@ -1,0 +1,30 @@
+{
+  "name": "files",
+  "private": true,
+  "version": "1.1.5",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview --host",
+    "deploy": "vite build && echo > dist/.nojekyll && gh-pages -d dist"
+  },
+  "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
+    "@vercel/blob": "^0.27.3",
+    "ant-design": "^1.0.0",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
+    "sweetalert2": "^11.17.2",
+    "vite-plugin-pwa": "^1.0.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.17",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "tailwindcss": "^4.0.17",
+    "vite": "^6.2.0"
+  }
+}

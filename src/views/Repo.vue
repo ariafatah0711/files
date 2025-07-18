@@ -1,0 +1,194 @@
+<script setup>
+import { ref, onMounted } from "vue";
+import IconButton from "../components/IconButton.vue";
+import Checkbox from "../components/Checkbox.vue"
+import Breadcrumb from "../components/Breadcrumb.vue";
+import { useFolder } from "../composables/useFolder";
+import { useRoute } from "vue-router";
+import { ArrowLeftOutlined, FileAddOutlined, FolderAddOutlined, FolderOpenOutlined, CloudUploadOutlined, DeleteOutlined, DownloadOutlined, CopyOutlined } from "@ant-design/icons-vue";
+import { downloadFolder, downloadFile, handleDownloadByQuery } from "../utils/Download"
+import GlobalSwal from "../utils/GlobalSwal";
+import { getActiveAccount, getActiveAccountIndex, isWriteModeForUser } from "../utils/auth";
+
+const isDragging = ref(false);
+const error = ref(null);
+const loading = ref(false);
+
+const {
+  repoName,
+  currentPath,
+  repoContents,
+  fileQueue,
+  selectedItems,
+  loadRepoContents: originalLoadRepoContents,
+  goBack,
+  addFile,
+  addFilePath,
+  addFolder,
+  uploadAllFiles,
+  deleteSelected,
+  toggleSelection,
+  handleDrop
+} = useFolder();
+const route = useRoute();
+const Swal = GlobalSwal;
+
+function checkWriteMode() {
+  const idx = getActiveAccountIndex();
+  const acc = getActiveAccount();
+  if (!isWriteModeForUser(idx, acc?.password)) {
+    Swal.fire("Read Only", "Aktifkan Write Mode untuk melakukan perubahan!", "warning");
+    return false;
+  }
+  return true;
+}
+
+function handleAddFile() { if (!checkWriteMode()) return; addFile(); }
+function handleAddFilePath() { if (!checkWriteMode()) return; addFilePath(); }
+function handleAddFolder() { if (!checkWriteMode()) return; addFolder(); }
+function handleUploadAllFiles() { if (!checkWriteMode()) return; uploadAllFiles(); }
+function handleDeleteSelected() { if (!checkWriteMode()) return; deleteSelected(); }
+
+const shareDownloadLink = (item) => {
+  const path = item.path || '';
+  const validRepoName = repoName.value && typeof repoName.value === 'string' ? repoName.value : 'UnknownRepo';
+  if (typeof path === 'string' && path.trim() !== '') {
+    const currentPath = window.location;
+    const downloadLink = `${currentPath}?download=${validRepoName}/${path}`;
+    navigator.clipboard.writeText(downloadLink)
+      .then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Link download berhasil disalin!',
+          text: 'Link download telah berhasil disalin ke clipboard.',
+        });
+      })
+      .catch((error) => {
+        console.error("Gagal menyalin link:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal menyalin link',
+          text: 'Gagal menyalin link. Coba lagi!',
+        });
+      });
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'Path tidak valid',
+      text: 'Gagal menyalin link karena path tidak valid.',
+    });
+  }
+};
+
+// Custom loadRepoContents with error handling
+async function loadRepoContents() {
+  loading.value = true;
+  error.value = null;
+  try {
+    const result = await originalLoadRepoContents();
+    // Jika repoContents kosong, cek apakah error 404
+    if (!repoContents.value || repoContents.value.length === 0) {
+      error.value = null; // Bukan error fatal, hanya kosong
+    }
+  } catch (err) {
+    if (err.message && err.message.includes("Not Found")) {
+      repoContents.value = [];
+      error.value = null; // Folder kosong, bukan error fatal
+    } else {
+      error.value = err;
+    }
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(() => {
+  loadRepoContents();
+  const downloadPath = route.query.download;
+  if (downloadPath) {
+    handleDownloadByQuery(downloadPath);
+  }
+});
+</script>
+
+<style>
+.drag-overlay {
+  /* position: fixed; */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 50;
+  transition: all 0.3s ease-in-out;
+}
+</style>
+
+<template>
+  <div class="p-4 min-h-screen transition-all duration-300"
+      :class="{ 'drag-overlay bg-blue-200 opacity-50': isDragging }"
+      @dragover.prevent="isDragging = true"
+      @dragenter.prevent="isDragging = true"
+      @dragleave="isDragging = false"
+      @drop="handleDrop($event); isDragging = false">
+
+    <h2 class="text-xl font-semibold mb-4">
+      <breadcrumb />
+    </h2>
+    
+    <div class="flex flex-wrap gap-4 justify-left pb-4">
+      <IconButton @click="handleAddFile" :icon="FileAddOutlined" label="Add" color="blue" />
+      <IconButton @click="handleAddFilePath" :icon="FolderAddOutlined" label="Add File with Path" color="green" />
+      <IconButton @click="handleAddFolder" :icon="FolderOpenOutlined" label="Add Folder" color="yellow" />
+      <IconButton @click="handleUploadAllFiles" :icon="CloudUploadOutlined" label="Upload" color="purple" />
+      <IconButton @click="handleDeleteSelected" :icon="DeleteOutlined" label="Delete" color="red" />
+    </div>
+
+    <div v-if="error" class="text-red-500 font-semibold">
+      ❌ Terjadi Kesalahan: {{ error.message || error || "Tidak diketahui" }}
+    </div>
+
+    <div v-else-if="loading" class="text-gray-500">Loading...</div>
+
+    <div v-else-if="repoContents.length === 0" class="text-gray-500">
+      📂 Folder kosong atau tidak ditemukan. Tambahkan file atau folder untuk memulai.
+    </div>
+
+    <ul v-else>
+      <IconButton @click="goBack" :icon="ArrowLeftOutlined" label="Back" color="gray" class="w-full" alwaysShowLabel />
+      <li v-for="item in repoContents" :key="item.path" class="flex justify-between items-center my-2 p-3 bg-gray-100 rounded shadow-md hover:bg-blue-100 cursor-pointer">
+        <Checkbox v-model="isChecked" :value="item.path" @change="toggleSelection(item.path)" class="mr-4"/>
+        <template v-if="item.type === 'dir'">
+          <router-link :to="`/${repoName}/${item.path}`" class="w-full text-blue-600 text-lg font-medium hover:text-blue-800 truncate">
+            📁 {{ item.name }}
+          </router-link>
+          <button @click="shareDownloadLink({ ...item, path: item.type === 'dir' && !item.path.endsWith('/') ? item.path + '/' : item.path })" 
+            class="flex bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 cursor-pointer mr-4">
+            <CopyOutlined />
+          </button>
+          <button  @click="downloadFolder(repoName, item.name)" download class="flex bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 cursor-pointer">
+            <DownloadOutlined />
+          </button>
+        </template>
+        <template v-else>
+          <a :href="item.html_url" target="_blank" class="w-full text-blue-600 text-lg font-medium hover:text-blue-800 truncate">
+            📄 {{ item.name }}
+          </a>
+          <button @click="shareDownloadLink (item)" class="flex bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 cursor-pointer mr-4">
+            <CopyOutlined />
+          </button>
+          <button @click="downloadFile(item)" class="flex bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 cursor-pointer">
+            <DownloadOutlined />
+          </button>
+        </template>
+      </li>
+    </ul>
+
+    <h3 class="text-lg font-semibold mt-4">Files/Folders to Upload:</h3>
+    <ul>
+      <li v-for="(item, index) in fileQueue" :key="index" class="flex justify-between items-center p-2 bg-gray-200 rounded shadow-sm my-1">
+        {{ item.path ? item.path.replace(/\/+$/, '') + '/' : '' }}{{ item.file.name }}
+        <button @click="fileQueue.splice(index, 1)">❌</button>
+      </li>
+    </ul>
+  </div>
+</template>
