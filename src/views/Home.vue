@@ -51,18 +51,16 @@ onMounted(() => {
       📂 Belum ada repository. Tambahkan repository baru untuk memulai.
     </div>
     <ul v-else class="flex flex-col gap-4">
-      <li v-for="repo in repos" :key="repo.id" class="flex items-center gap-4 bg-white rounded-xl shadow p-4 hover:bg-blue-50 transition cursor-pointer border border-gray-100" @click="router.push(`/${repo.name}`)">
-        <div class="flex items-center justify-center bg-blue-500 text-white rounded-lg w-10 h-10 font-bold text-base">
-          📁
+      <li v-for="repo in repos" :key="repo.id" class="group flex items-center gap-4 bg-white rounded-xl shadow p-4 border border-gray-100 hover:bg-blue-50 transition cursor-pointer" @click="router.push(`/${repo.name}`)">
+        <div class="flex items-center justify-center bg-yellow-100 text-yellow-500 rounded-lg w-12 h-12 font-bold text-xl shadow-sm">
+          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
         </div>
         <span class="flex-1 text-blue-700 text-lg font-semibold truncate">
           {{ repo.name }}
         </span>
-        <div class="flex items-center gap-2 ml-auto">
-          <button class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors cursor-pointer" @click.stop="handleDeleteRepo(repo.name)">
-            <DeleteOutlined />
-          </button>
-        </div>
+        <button class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors cursor-pointer opacity-0 group-hover:opacity-100" @click.stop="handleDeleteRepo(repo.name)">
+          <DeleteOutlined />
+        </button>
       </li>
     </ul>
   </div>

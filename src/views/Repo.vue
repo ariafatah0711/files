@@ -142,30 +142,38 @@ onMounted(() => {
     </div>
     <ul v-else class="flex flex-col gap-4">
       <IconButton @click="goBack" :icon="ArrowLeftOutlined" label="Back" color="gray" class="w-full" alwaysShowLabel />
-      <li v-for="item in repoContents" :key="item.path" class="flex justify-between items-center gap-4 bg-white rounded-xl shadow p-4 border border-gray-100 hover:bg-blue-50 transition cursor-pointer">
+      <li v-for="item in repoContents" :key="item.path" class="group flex items-center gap-4 bg-white rounded-xl shadow p-4 border border-gray-100 hover:bg-blue-50 transition cursor-pointer">
         <Checkbox v-model="isChecked" :value="item.path" @change="toggleSelection(item.path)" class="mr-4"/>
+        <div class="flex items-center justify-center w-10 h-10">
+          <svg v-if="item.type === 'dir'" class="w-8 h-8 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+          <svg v-else class="w-8 h-8 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 3a2 2 0 012-2h4.586A2 2 0 0112 2.586l3.414 3.414A2 2 0 0116 7.414V17a2 2 0 01-2 2H6a2 2 0 01-2-2V3z"/></svg>
+        </div>
         <template v-if="item.type === 'dir'">
           <router-link :to="`/${repoName}/${item.path}`" class="flex-1 text-blue-700 text-lg font-semibold truncate hover:text-blue-900">
-            📁 {{ item.name }}
+            {{ item.name }}
           </router-link>
-          <button @click="shareDownloadLink({ ...item, path: item.type === 'dir' && !item.path.endsWith('/') ? item.path + '/' : item.path })" 
-            class="flex bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 cursor-pointer mr-2">
-            <CopyOutlined />
-          </button>
-          <button  @click="downloadFolder(repoName, item.name)" download class="flex bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 cursor-pointer">
-            <DownloadOutlined />
-          </button>
+          <div class="flex items-center gap-2 ml-auto opacity-0 group-hover:opacity-100 transition">
+            <button @click.stop="shareDownloadLink({ ...item, path: item.type === 'dir' && !item.path.endsWith('/') ? item.path + '/' : item.path })" 
+              class="flex bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 cursor-pointer">
+              <CopyOutlined />
+            </button>
+            <button @click.stop="downloadFolder(repoName, item.name)" download class="flex bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 cursor-pointer">
+              <DownloadOutlined />
+            </button>
+          </div>
         </template>
         <template v-else>
           <a :href="item.html_url" target="_blank" class="flex-1 text-blue-700 text-lg font-semibold truncate hover:text-blue-900">
-            📄 {{ item.name }}
+            {{ item.name }}
           </a>
-          <button @click="shareDownloadLink (item)" class="flex bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 cursor-pointer mr-2">
-            <CopyOutlined />
-          </button>
-          <button @click="downloadFile(item)" class="flex bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 cursor-pointer">
-            <DownloadOutlined />
-          </button>
+          <div class="flex items-center gap-2 ml-auto opacity-0 group-hover:opacity-100 transition">
+            <button @click.stop="shareDownloadLink(item)" class="flex bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 cursor-pointer">
+              <CopyOutlined />
+            </button>
+            <button @click.stop="downloadFile(item)" class="flex bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 cursor-pointer">
+              <DownloadOutlined />
+            </button>
+          </div>
         </template>
       </li>
     </ul>
