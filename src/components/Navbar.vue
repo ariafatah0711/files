@@ -3,7 +3,7 @@
     <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-2">
       <!-- Judul -->
       <div class="flex items-center gap-2">
-        <a href="/" class="font-bold text-blue-700 text-lg hover:underline hover:text-blue-900 transition">
+        <a href="https://ariaf.my.id" class="font-bold text-blue-700 text-lg hover:underline hover:text-blue-900 transition">
           {{ appName }}
         </a>
         <span class="ml-2 text-xs text-gray-400">v{{ appVersion }}</span>
