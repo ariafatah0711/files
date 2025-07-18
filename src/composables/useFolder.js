@@ -19,6 +19,7 @@ export function useFolder() {
   const selectedItems = ref(new Set());
 
   async function loadRepoContents() {
+    selectedItems.value.clear(); // Reset selection setiap load folder
     repoContents.value = await fetchRepoContents(repoName.value, currentPath.value);
     // console.log(repoContents);
   }
@@ -393,6 +394,7 @@ export function useFolder() {
     (newParams) => {
       repoName.value = newParams.repo;
       currentPath.value = newParams.path || "";
+      selectedItems.value.clear(); // Reset selection setiap navigasi
       loadRepoContents();
     }
   );

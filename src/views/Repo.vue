@@ -14,7 +14,7 @@ const isDragging = ref(false);
 const error = ref(null);
 const loading = ref(false);
 
-const {
+const { 
   repoName,
   currentPath,
   repoContents,
@@ -143,7 +143,11 @@ onMounted(() => {
     <ul v-else class="flex flex-col gap-4">
       <IconButton @click="goBack" :icon="ArrowLeftOutlined" label="Back" color="gray" class="w-full" alwaysShowLabel />
       <li v-for="item in repoContents" :key="item.path" class="group flex items-center gap-4 bg-white rounded-xl shadow p-4 border border-gray-100 hover:bg-blue-50 transition cursor-pointer">
-        <Checkbox v-model="isChecked" :value="item.path" @change="toggleSelection(item.path)" class="mr-4"/>
+        <Checkbox
+          :modelValue="selectedItems.has(item.path)"
+          @update:modelValue="toggleSelection(item.path)"
+          class="mr-4"
+        />
         <div class="flex items-center justify-center w-10 h-10">
           <svg v-if="item.type === 'dir'" class="w-8 h-8 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
           <svg v-else class="w-8 h-8 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 3a2 2 0 012-2h4.586A2 2 0 0112 2.586l3.414 3.414A2 2 0 0116 7.414V17a2 2 0 01-2 2H6a2 2 0 01-2-2V3z"/></svg>

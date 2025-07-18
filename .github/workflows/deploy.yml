@@ -1,46 +1,53 @@
-name: Deploy to GitHub Pages
+name: Redirect GitHub Pages to Vercel
 
 on:
   push:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
-  build-and-deploy:
+  deploy-redirect:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Set Environment Variables
+      - name: Create redirect index.html
         run: |
-          echo "VITE_PASSWORD=${{ secrets.VITE_PASSWORD }}" >> .env
-          echo "VITE_USERNAME=${{ vars.VITE_USERNAME }}" >> .env
-          echo "VITE_API_DOMAIN=${{ vars.VITE_API_DOMAIN }}" >> .env
-
-      - name: Build Project
-        run: npm run build
-
-      - name: Generate .nojekyll
-        run: echo > dist/.nojekyll
+          mkdir redirect
+          cat <<EOF > redirect/index.html
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta http-equiv="refresh" content="0; url=https://files.ariaf.my.id" />
+              <script>location.href = "https://files.ariaf.my.id";</script>
+              <title>Redirecting...</title>
+            </head>
+            <body>
+              Redirecting to <a href="https://files.ariaf.my.id">files.ariaf.my.id</a>...
+            </body>
+          </html>
+          EOF
+          touch redirect/.nojekyll
 
       - name: Configure Git
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages (redirect only)
         run: |
-          git checkout --orphan gh-pages
-          git --work-tree dist add --all
-          git --work-tree dist commit -m "Deploy to GitHub Pages"
-          git push --no-verify https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:gh-pages --force
+          git fetch origin gh-pages || echo "gh-pages doesn't exist yet"
+          git worktree add gh-pages origin/gh-pages || git worktree add gh-pages
+          
+          rm -rf gh-pages/*
+          cp -r redirect/* gh-pages/
+
+          cd gh-pages
+          git add --all
+          git commit -m "Deploy redirect to GitHub Pages" || echo "No changes to commit"
+          git push origin HEAD:gh-pages

@@ -42,6 +42,8 @@ export const deleteRepoAPI = async (repoName) => {
 
 // Repo
 
+const folderCache = new Map();
+
 export async function fetchRepoContents(repoName, path = "") {
   const token = getActiveAccount()?.api;
   const username = getActiveAccount()?.name;
@@ -49,27 +51,34 @@ export async function fetchRepoContents(repoName, path = "") {
     .split(",")
     .join("/");
   const url = `https://api.github.com/repos/${username}/${repoName}/contents/${cleanedPath ? `${cleanedPath}` : ""}`;
+  const cacheKey = `${username}/${repoName}/${cleanedPath}`;
+
+  if (folderCache.has(cacheKey)) {
+    return folderCache.get(cacheKey);
+  }
 
   try {
     const response = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (response.status === 404) {
-      // Folder/file tidak ada, return kosong tanpa error
+      folderCache.set(cacheKey, []);
       return [];
     }
     const data = await response.json();
     if (!Array.isArray(data)) {
-      // Jika object error dari GitHub (misal { message: 'Not Found', ... })
       if (data && data.message === "Not Found") {
+        folderCache.set(cacheKey, []);
         return [];
       }
-      // Bukan array, bisa error lain
+      folderCache.set(cacheKey, []);
       return [];
     }
+    folderCache.set(cacheKey, data);
     return data;
   } catch (error) {
     console.error("Error fetching repo contents:", error);
+    folderCache.set(cacheKey, []);
     return [];
   }
 }

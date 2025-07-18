@@ -167,11 +167,15 @@
           Tambah
         </button>
       </div>
-      <p class="text-xs text-gray-500 mt-2">
-        <b>API/Token harus dari GitHub</b> dengan scope <b>repo</b> saja.<br />
-        <a href='https://github.com/settings/tokens/new?scopes=repo&description=notes-gist' target='_blank' rel='noopener noreferrer' class='text-blue-600 underline'>Buat token di sini</a>.<br />
-        Jangan centang scope lain, cukup <b>repo</b>.<br />
-        Token ini hanya untuk akses repo, tidak bisa edit repo utama kamu.
+      <p class="text-xs text-gray-700 mt-2 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+        <b class="text-yellow-700">Penting!</b><br />
+        <b>Gunakan token dari akun GitHub khusus testing.</b><br />
+        <span class="text-yellow-700">Jangan gunakan token dari akun utama yang punya banyak repo penting.</span><br />
+        Token harus punya scope <b>repo</b> (read & write).<br />
+        <a href='https://github.com/settings/tokens/new?scopes=repo,write:packages&description=files_repo' target='_blank' rel='noopener noreferrer' class='text-blue-600 underline'>Buat token di sini</a>.<br />
+        Token ini hanya untuk akses repo di akun tersebut, tidak bisa edit repo utama kamu.<br />
+        <b class="text-yellow-700">Simpan token ini dengan aman, dan hapus jika sudah tidak digunakan.</b><br />
+        <span class="text-red-600 font-bold">Username yang diinput harus persis sama dengan username GitHub!</span>
       </p>
     </div>
     <!-- Modal hapus user lokal -->

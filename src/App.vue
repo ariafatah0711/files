@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 min-h-screen">
-    <div class="max-w-4xl mx-auto px-4 py-6">
+    <div class="max-w-5xl mx-auto px-4 py-6">
       <Navbar />
       <router-view class="pt-10 sm:pt-10"></router-view>
     </div>
